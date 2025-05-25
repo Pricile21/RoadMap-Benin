@@ -838,20 +838,6 @@ function updateFuelCost() {
     fuelCostEl.innerText = `${cout.toLocaleString()} FCFA`;
     fuelLitersEl.innerText = `${litres.toFixed(1)} L`;
 }
-    </script><script>
-function updateFuelCost() {
-    const pricePerLitre = parseFloat(document.getElementById('fuelPrice').value);
-    const distanceText = document.getElementById('totalDistance').innerText;
-    if (!distanceText || isNaN(pricePerLitre)) return;
-
-    const distance = parseFloat(distanceText.replace(' km', '').replace(',', '.'));
-    const consoPar100km = 7;
-    const litres = (distance * consoPar100km) / 100;
-    const cout = Math.round(litres * pricePerLitre);
-
-    document.getElementById('fuelCost').innerText = `${cout.toLocaleString()} FCFA`;
-    document.getElementById('fuelLiters').innerText = `${litres.toFixed(1)} L`;
-}
     </script>
 <script>
         // Configuration et variables globales
