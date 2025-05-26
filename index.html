@@ -662,7 +662,6 @@
 <option value="walking">🚶 À pied</option>
 <option value="cycling">🚴 Vélo</option>
 <option value="motorcycle">🏍️ Moto</option>
-
 <option value="suv">🚙 SUV</option>
 <option value="bus">🚌 Bus</option>
 </select>
@@ -735,7 +734,6 @@
   🚗 7 L/100 km, 🏍️ 3 L/100 km, 🚙 10 L/100 km, 🚌 25 L/100 km.
   Si vous remplissez la consommation manuellement, elle remplacera celle liée au type de transport.
 </div>
-
 <div class="result-item">
 <span class="result-label">
 <i class="fas fa-tachometer-alt"></i>
@@ -743,7 +741,6 @@
   </span>
 <span class="result-value" id="fuelLiters">-</span>
 </div>
-
 <div class="route-info">
 <div class="info-card">
 <div class="info-card-value" id="straightDistance">-</div>
@@ -5053,7 +5050,6 @@ const speeds = {
             }
         });
     </script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
@@ -5078,6 +5074,57 @@ function exportToPDF() {
   };
   html2pdf().from(container).set(opt).save();
 }
+</script>
+
+<script>
+// === INTERACTION PAR CLIC POUR CHOISIR LES VILLES ===
+let clickCount = 0;
+
+function getNearestCity(lat, lng) {
+    if (!cities || cities.length === 0) return null;
+    let minDist = Infinity;
+    let nearest = null;
+    cities.forEach(city => {
+        const d = Math.sqrt(Math.pow(city.lat - lat, 2) + Math.pow(city.lon - lng, 2));
+        if (d < minDist) {
+            minDist = d;
+            nearest = city;
+        }
+    });
+    return nearest;
+}
+
+function setMarker(type, lat, lng) {
+    const marker = L.marker([lat, lng]);
+    if (type === 'from') {
+        if (fromMarker) map.removeLayer(fromMarker);
+        fromMarker = marker;
+    } else {
+        if (toMarker) map.removeLayer(toMarker);
+        toMarker = marker;
+    }
+    marker.addTo(map);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (!map) return;
+    map.on('click', function(e) {
+        const latlng = e.latlng;
+        const nearestCity = getNearestCity(latlng.lat, latlng.lng);
+        if (!nearestCity) return;
+
+        if (clickCount === 0) {
+            document.getElementById("fromCity").value = nearestCity.name;
+            setMarker('from', nearestCity.lat, nearestCity.lon);
+            clickCount++;
+        } else {
+            document.getElementById("toCity").value = nearestCity.name;
+            setMarker('to', nearestCity.lat, nearestCity.lon);
+            clickCount = 0;
+            calculateRoute();
+        }
+    });
+});
 </script>
 </body>
 </html>
